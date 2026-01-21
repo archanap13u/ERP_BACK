@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Exclude Frontend and Legacy Backend for Backend-Only Repo
+/frontend
+/backend
