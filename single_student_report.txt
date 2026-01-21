@@ -1,0 +1,7 @@
+Total students: 1
+Student: archana
+  _id: 696f3d61efb280d88f609d8e
+  studentId: "undefined" (undefined)
+  username: "op12" (string)
+  email: "admissions@my.amrita.edu" (string)
+  organizationId: 696f24697e737d6a7669c501

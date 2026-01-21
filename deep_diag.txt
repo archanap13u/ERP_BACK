@@ -1,0 +1,10 @@
+Total Students: 1
+
+--- Student ---
+_id: 696f3d61efb280d88f609d8e
+name: archana
+sid: undefined
+user: "op12"
+mail: "admissions@my.amrita.edu"
+org: 696f24697e737d6a7669c501
+

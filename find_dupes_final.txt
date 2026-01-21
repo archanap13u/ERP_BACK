@@ -1,0 +1,8 @@
+Connected to MongoDB Atlas
+--- DUPLICATE GROUPS FOUND ---
+[]
+
+--- Records with bad studentId (1) ---
+Student: archana | studentId: "undefined"
+
+Cleaned up 1 bad studentIds.

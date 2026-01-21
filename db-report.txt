@@ -1,0 +1,8 @@
+Connected to MongoDB
+
+Total Organizations in DB: 1
+- iitss (ID: 696f24697e737d6a7669c501, orgId: ORG-1768891497412-0BV1DFFRA)
+
+Total Departments in DB: 2
+- hr (ID: 696f248d7e737d6a7669c523, orgId: 696f24697e737d6a7669c501)
+- operations (ID: 696f24d57e737d6a7669c56b, orgId: 696f24697e737d6a7669c501)

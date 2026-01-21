@@ -1,0 +1,14 @@
+Connected to MongoDB
+
+--- ORGANIZATIONS ---
+ID: 696f17b5a6f4897ecb25ddf9, Name: iits
+
+--- STUDY CENTERS ---
+ID: 6968c277f70fab51e57028a2, Name: Lumina, OrgID: 6961df3caae17639323fc3a2
+ID: 6968c353f70fab51e57028d2, Name: Lumina, OrgID: 6961df3caae17639323fc3a2
+ID: 6968c7039e74adf3aefa075a, Name: Lumina, OrgID: 6961df3caae17639323fc3a2
+ID: 6968c830315a977a1cf4656a, Name: Lumina, OrgID: 6961df3caae17639323fc3a2
+ID: 6969b77e217b28e718e163fa, Name: iits, OrgID: 6969b669217b28e718e16306
+ID: 696e13163965efd4723af19c, Name: iits, OrgID: 696dc4bf406e250bb59e8cd6
+ID: 696f1f9db57d6af781e7dbd5, Name: arch, OrgID: 696f17b5a6f4897ecb25ddf9
+ID: 696f209eb57d6af781e7dc5b, Name: gr, OrgID: 696f17b5a6f4897ecb25ddf9

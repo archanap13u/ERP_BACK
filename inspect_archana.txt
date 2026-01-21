@@ -1,0 +1,4 @@
+Student: archana
+studentId: undefined
+username: "op12"
+email: "admissions@my.amrita.edu"

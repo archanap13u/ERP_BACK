@@ -1,0 +1,10 @@
+﻿
+> erp-mern@0.1.0 server
+> node server/index.js
+
+[dotenv@17.2.3] injecting env (1) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+[Models Index] Registered keys: employee, student, organization, superadmin, department, license, platformsettings, lead, application, attendance, salesorder, salesinvoice, purchaseorder, supplier, quotation, opportunity, customer
+[Resource Route] Models module loaded from: C:\Users\iitsi\Downloads\erpnext-develop\erpnext-develop\server\models\index.js
+[Resource Route] Available model keys: employee, student, organization, superadmin, department, license, platformsettings, lead, application, attendance, salesorder, salesinvoice, purchaseorder, supplier, quotation, opportunity, customer
+[DB] MongoDB connected successfully
+[Server] Express running on http://localhost:5000

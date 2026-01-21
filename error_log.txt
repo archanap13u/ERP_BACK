@@ -1,0 +1,8 @@
+TypeError: next is not a function
+TypeError: next is not a function
+    at model.<anonymous> (C:\Users\iitsi\Downloads\erpnext-develop\erpnext-develop\server\models\Announcement.js:38:5)
+    at Kareem.execPre (C:\Users\iitsi\Downloads\erpnext-develop\erpnext-develop\node_modules\kareem\index.js:63:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async model.$__save (C:\Users\iitsi\Downloads\erpnext-develop\erpnext-develop\node_modules\mongoose\lib\model.js:369:5)
+    at async model.save (C:\Users\iitsi\Downloads\erpnext-develop\erpnext-develop\node_modules\mongoose\lib\model.js:609:5)
+    at async test (C:\Users\iitsi\Downloads\erpnext-develop\erpnext-develop\debug_announce.js:20:9)

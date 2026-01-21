@@ -1,0 +1,140 @@
+Connected to Atlas
+Current Indexes: [
+  {
+    "v": 2,
+    "key": {
+      "_id": 1
+    },
+    "name": "_id_"
+  },
+  {
+    "v": 2,
+    "key": {
+      "email": 1
+    },
+    "name": "email_1",
+    "unique": true
+  },
+  {
+    "v": 2,
+    "key": {
+      "username": 1
+    },
+    "name": "username_1",
+    "unique": true,
+    "sparse": true
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1
+    },
+    "name": "organizationId_1"
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1,
+      "email": 1
+    },
+    "name": "organizationId_1_email_1",
+    "unique": true,
+    "sparse": true
+  },
+  {
+    "v": 2,
+    "key": {
+      "departmentId": 1
+    },
+    "name": "departmentId_1"
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1,
+      "username": 1
+    },
+    "name": "organizationId_1_username_1",
+    "unique": true,
+    "sparse": true
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1,
+      "studentId": 1
+    },
+    "name": "organizationId_1_studentId_1",
+    "unique": true,
+    "sparse": true
+  }
+]
+Dropping index: email_1
+Dropping index: username_1
+Dropping index: organizationId_1
+Dropping index: organizationId_1_email_1
+Dropping index: departmentId_1
+Dropping index: organizationId_1_username_1
+Dropping index: organizationId_1_studentId_1
+Syncing indexes...
+Final Indexes: [
+  {
+    "v": 2,
+    "key": {
+      "_id": 1
+    },
+    "name": "_id_"
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1,
+      "studentId": 1
+    },
+    "name": "organizationId_1_studentId_1",
+    "unique": true,
+    "partialFilterExpression": {
+      "studentId": {
+        "$type": "string",
+        "$gt": ""
+      }
+    }
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1,
+      "username": 1
+    },
+    "name": "organizationId_1_username_1",
+    "unique": true,
+    "partialFilterExpression": {
+      "username": {
+        "$type": "string",
+        "$gt": ""
+      }
+    }
+  },
+  {
+    "v": 2,
+    "key": {
+      "organizationId": 1,
+      "email": 1
+    },
+    "name": "organizationId_1_email_1",
+    "unique": true,
+    "partialFilterExpression": {
+      "email": {
+        "$type": "string",
+        "$gt": ""
+      }
+    }
+  },
+  {
+    "v": 2,
+    "key": {
+      "departmentId": 1
+    },
+    "name": "departmentId_1"
+  }
+]
