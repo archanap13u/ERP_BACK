@@ -90,6 +90,32 @@ EmployeeSchema.post('save', async function (doc) {
     }
 });
 
+// Auto-Reopen Vacancy if Position becomes available
+EmployeeSchema.post('findOneAndDelete', async function (doc) {
+    if (doc && doc.jobOpening) {
+        try {
+            const JobOpening = mongoose.model('JobOpening');
+            const Employee = mongoose.model('Employee');
+
+            const vacancy = await JobOpening.findById(doc.jobOpening);
+            if (vacancy) {
+                const currentCount = await Employee.countDocuments({ jobOpening: doc.jobOpening });
+
+                if (currentCount < vacancy.no_of_positions) {
+                    if (vacancy.status !== 'Open') {
+                        vacancy.status = 'Open';
+                        vacancy.closed_date = null;
+                        await vacancy.save();
+                        console.log(`[Vacancy] Re-opened vacancy "${vacancy.job_title}" as a position became available (Count: ${currentCount}/${vacancy.no_of_positions}).`);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('[Vacancy] Failed to auto-reopen vacancy:', err);
+        }
+    }
+});
+
 // Compound Index for Multi-Tenant Isolation
 EmployeeSchema.index({ organizationId: 1, employeeId: 1 }, { unique: true });
 EmployeeSchema.index({ organizationId: 1, username: 1 }, { unique: true, sparse: true });

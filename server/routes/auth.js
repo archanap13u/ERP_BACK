@@ -159,6 +159,20 @@ router.post('/login', async (req, res) => {
             const emp = empMatches[0];
             console.log(`[Auth] ✅ Password Match for Employee: ${emp.username} (Org: ${emp.organizationId})`);
 
+            // --- STRICT ISOLATION CHECK ---
+            // Check if this user also exists as a Student with the same credentials
+            // This prevents students from accidentally logging in as staff if they share a username/email
+            const potentialStudents = await Student.find(userQuery);
+            const studentCollision = potentialStudents.some(s => s.password === cleanPassword);
+
+            if (studentCollision) {
+                console.warn(`[Auth] ⚠️ Identity Collision BLOCKED: "${cleanUsername}" matches both Employee and Student.`);
+                return res.status(409).json({
+                    success: false,
+                    error: 'Ambiguous credentials. This identifier matches both a Student and a Staff account. Please contact your admin to resolve this duplication.'
+                });
+            }
+
             // Check if organization is active
             if (emp.organizationId) {
                 const org = await Organization.findById(emp.organizationId);
@@ -169,9 +183,30 @@ router.post('/login', async (req, res) => {
             }
 
             let role = 'Employee';
-            const desig = (emp.designation || '').toUpperCase();
-            if (desig.includes('HR')) role = 'HR';
-            else if (desig.includes('OPERATIONS')) role = 'Operations';
+
+            // IMPROVED ROLE DETERMINATION:
+            // Check Department's panelType first, then fallback to designation string check
+            if (emp.departmentId) {
+                try {
+                    const dept = await Department.findById(emp.departmentId);
+                    if (dept) {
+                        if (dept.panelType === 'HR') role = 'HR';
+                        else if (dept.panelType === 'Operations') role = 'Operations';
+                        else if (dept.panelType === 'Finance') role = 'Finance';
+                    }
+                } catch (err) {
+                    console.error('[Auth] Error fetching department for role determination:', err);
+                }
+            }
+
+            // Fallback: If still 'Employee', check designation (lower priority)
+            if (role === 'Employee') {
+                const desig = (emp.designation || '').toUpperCase();
+                // ONLY auto-promote to HR if they are in an HR related department AND have the designation
+                const deptName = (emp.department || '').toUpperCase();
+                if (desig.includes('HR') && deptName.includes('HR')) role = 'HR';
+                else if (desig.includes('OPERATIONS') && deptName.includes('OPERATIONS')) role = 'Operations';
+            }
 
             return res.json({
                 success: true,
@@ -179,7 +214,8 @@ router.post('/login', async (req, res) => {
                     name: emp.employeeName,
                     role: role,
                     employeeId: emp.employeeId,
-                    organizationId: emp.organizationId
+                    organizationId: emp.organizationId,
+                    departmentId: emp.departmentId
                 }
             });
         }
