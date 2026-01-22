@@ -14,272 +14,137 @@ const StudyCenter = require('../models/StudyCenter');
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-
         const cleanUsername = (username || '').trim();
         const cleanPassword = password;
 
-        console.log(`[Auth] 🔑 Login attempt for: "${cleanUsername}"`);
+        console.log(`\n[Auth v2.2] === LOGIN ATTEMPT: "${cleanUsername}" ===`);
 
-        const userQuery = {
-            $or: [
-                { username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') } },
-                { email: { $regex: new RegExp(`^${cleanUsername}$`, 'i') } }
-            ]
-        };
+        // 1. GLOBAL SCAN (Diagnostic)
+        const idRegex = new RegExp(`^${cleanUsername}$`, 'i');
 
-        // --- Check Super Admin ---
-        console.log(`[Auth] 🔍 Searching Super Admin...`);
-        const superAdmins = await SuperAdmin.find(userQuery);
-        for (const admin of superAdmins) {
-            const isMatch = await bcrypt.compare(cleanPassword, admin.password);
+        const [empCheck, stuCheck, deptCheck, orgCheck, superCheck, centerCheck] = await Promise.all([
+            Employee.findOne({ $or: [{ username: idRegex }, { email: idRegex }, { employeeId: idRegex }] }),
+            Student.findOne({ $or: [{ username: idRegex }, { email: idRegex }] }),
+            Department.findOne({ username: idRegex }),
+            Organization.findOne({ username: idRegex }),
+            SuperAdmin.findOne({ $or: [{ username: idRegex }, { email: idRegex }] }),
+            StudyCenter.findOne({ username: idRegex })
+        ]);
+
+        console.log(`[Auth Diagnostics] Trace for identifier: "${cleanUsername}"`);
+        console.log(`  > Employee Search: ${empCheck ? `FOUND [ID: ${empCheck.employeeId}, User: ${empCheck.username}]` : 'NOT FOUND'}`);
+        console.log(`  > Department Search: ${deptCheck ? `FOUND [Name: ${deptCheck.name}, Panel: ${deptCheck.panelType}]` : 'NOT FOUND'}`);
+
+        // --- PRIORITY 1: EMPLOYEE ---
+        if (empCheck) {
+            console.log(`[Auth Phase] 1. Employee Matching Pattern found for ${empCheck.employeeId}`);
+            if (empCheck.password === cleanPassword) {
+                console.log(`[Auth Phase] ✅ Password Matched for Employee. ROLE = Employee`);
+
+                if (empCheck.organizationId) {
+                    const org = await Organization.findById(empCheck.organizationId);
+                    if (org && !org.isActive) return res.status(403).json({ success: false, error: 'Organization deactivated.' });
+                }
+
+                const payload = {
+                    success: true,
+                    user: {
+                        name: empCheck.employeeName,
+                        role: 'Employee',
+                        employeeId: empCheck.employeeId,
+                        organizationId: empCheck.organizationId,
+                        departmentId: empCheck.departmentId
+                    }
+                };
+                console.log(`[Auth Phase] Sending Employee Payload:`, JSON.stringify(payload));
+                return res.json(payload);
+            } else {
+                console.warn(`[Auth Phase] ❌ Password Mismatch for Employee ${empCheck.employeeId}. Blocking fallthrough.`);
+                return res.status(401).json({ success: false, error: 'Invalid username or password' });
+            }
+        }
+
+        // --- PRIORITY 2: STUDENT ---
+        if (stuCheck) {
+            console.log(`[Auth Phase] 2. Student Matching Pattern found.`);
+            if (stuCheck.password === cleanPassword) {
+                console.log(`[Auth Phase] ✅ Password Matched for Student.`);
+                if (stuCheck.verificationStatus !== 'Active') return res.status(403).json({ success: false, error: 'Student account not active.' });
+                return res.json({
+                    success: true,
+                    user: { name: stuCheck.studentName, role: 'Student', organizationId: stuCheck.organizationId }
+                });
+            } else {
+                console.warn(`[Auth Phase] ❌ Password Mismatch for Student. Blocking fallthrough.`);
+                return res.status(401).json({ success: false, error: 'Invalid username or password' });
+            }
+        }
+
+        // --- PRIORITY 3: ADMIN ROLES (Fallthrough) ---
+        console.log(`[Auth Phase] 3. No Individual Identity found. Checking Administrative roles...`);
+
+        if (superCheck) {
+            const isMatch = await bcrypt.compare(cleanPassword, superCheck.password);
             if (isMatch) {
-                console.log(`[Auth] ✅ Password Match for SuperAdmin: ${admin.username}`);
-                return res.json({
-                    success: true,
-                    user: {
-                        name: admin.fullName,
-                        role: 'SuperAdmin',
-                        id: admin._id,
-                        email: admin.email
-                    }
-                });
+                console.log(`[Auth Phase] Matched SuperAdmin`);
+                return res.json({ success: true, user: { name: superCheck.fullName, role: 'SuperAdmin' } });
             }
         }
 
-        // --- Check Organization ---
-        console.log(`[Auth] 🔍 Searching Organizations...`);
-        const organizations = await Organization.find({
-            username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') }
-        });
-        for (const org of organizations) {
-            if (org.password === cleanPassword) {
-                if (!org.isActive) {
-                    console.warn(`[Auth] ⛔ Organization is deactivated: ${org.name}`);
-                    return res.status(403).json({ success: false, error: 'Your organization account has been deactivated. Please contact the administrator.' });
-                }
-                return res.json({
-                    success: true,
-                    user: {
-                        name: org.name,
-                        role: 'OrganizationAdmin',
-                        organizationId: org._id
-                    }
-                });
-            }
+        if (orgCheck && orgCheck.password === cleanPassword) {
+            if (!orgCheck.isActive) return res.status(403).json({ success: false, error: 'Organization deactivated.' });
+            console.log(`[Auth Phase] Matched Organization ${orgCheck.name}`);
+            return res.json({ success: true, user: { name: orgCheck.name, role: 'OrganizationAdmin', organizationId: orgCheck._id } });
         }
 
-        // --- Check Department ---
-        console.log(`[Auth] 🔍 Searching Departments...`);
-        const departments = await Department.find({
-            username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') }
-        });
-        const deptMatches = departments.filter(d => d.password === cleanPassword);
-        if (deptMatches.length > 1) {
-            console.warn(`[Auth] ⚠️ Identity Collision (Department): Multiple accounts for "${cleanUsername}"`);
-            return res.status(409).json({ success: false, error: 'Ambiguous credentials. Please use an organization-specific identifier or contact support.' });
-        }
-        if (deptMatches.length === 1) {
-            const dept = deptMatches[0];
-            console.log(`[Auth] ✅ Password Match for Department: ${dept.username}`);
-
-            if (dept.organizationId) {
-                const org = await Organization.findById(dept.organizationId);
-                if (org && !org.isActive) {
-                    console.warn(`[Auth] ⛔ Organization is deactivated for department: ${dept.username}`);
-                    return res.status(403).json({ success: false, error: 'Your organization account has been deactivated. Please contact the administrator.' });
-                }
-            }
-
+        if (deptCheck && deptCheck.password === cleanPassword) {
+            console.log(`[Auth Phase] Matched Department ${deptCheck.name}`);
             let role = 'DepartmentAdmin';
-            const pType = dept.panelType;
+            if (deptCheck.panelType === 'HR') role = 'HR';
+            else if (deptCheck.panelType === 'Operations' || deptCheck.panelType === 'Education') role = 'Operations';
+            else if (deptCheck.panelType === 'Finance') role = 'Finance';
 
-            if (pType === 'HR') role = 'HR';
-            else if (pType === 'Operations') role = 'Operations';
-            else {
-                const deptName = (dept.name || '').toUpperCase();
-                if (deptName.includes('HR')) role = 'HR';
-                else if (deptName.includes('OPERATIONS')) role = 'Operations';
-            }
-
-            return res.json({
+            const payload = {
                 success: true,
                 user: {
-                    name: dept.name,
+                    name: deptCheck.name,
                     role: role,
-                    organizationId: dept.organizationId,
-                    departmentId: dept._id,
-                    features: dept.features || []
+                    departmentId: deptCheck._id,
+                    organizationId: deptCheck.organizationId,
+                    panelType: deptCheck.panelType || 'Admin'
                 }
-            });
+            };
+            console.log(`[Auth Phase] Sending Admin Payload:`, JSON.stringify(payload));
+            return res.json(payload);
         }
 
-        // --- Check Study Center ---
-        console.log(`[Auth] 🔍 Searching Study Centers...`);
-        const centers = await StudyCenter.find({
-            username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') }
-        });
-        const centerMatches = centers.filter(c => c.password === cleanPassword);
-        if (centerMatches.length > 1) {
-            console.warn(`[Auth] ⚠️ Identity Collision (StudyCenter): Multiple accounts for "${cleanUsername}"`);
-            return res.status(409).json({ success: false, error: 'Ambiguous credentials. Please contact support.' });
-        }
-        if (centerMatches.length === 1) {
-            const center = centerMatches[0];
-            console.log(`[Auth] ✅ Password Match for Study Center: ${center.username}`);
-
-            if (center.organizationId) {
-                const org = await Organization.findById(center.organizationId);
-                if (org && !org.isActive) {
-                    console.warn(`[Auth] ⛔ Organization is deactivated for center: ${center.username}`);
-                    return res.status(403).json({ success: false, error: 'Your organization account has been deactivated. Please contact the administrator.' });
-                }
-            }
-
+        if (centerCheck && centerCheck.password === cleanPassword) {
+            console.log(`[Auth Phase] Matched Study Center`);
             return res.json({
                 success: true,
                 user: {
-                    name: center.centerName,
+                    name: centerCheck.centerName,
                     role: 'StudyCenter',
-                    organizationId: center.organizationId,
-                    study_center_id: center._id,
-                    study_center_name: center.centerName
+                    organizationId: centerCheck.organizationId,
+                    study_center_id: centerCheck._id
                 }
             });
         }
 
-        // --- Check Employee ---
-        console.log(`[Auth] 🔍 Searching Employees...`);
-        const employees = await Employee.find(userQuery);
-        const empMatches = employees.filter(e => e.password === cleanPassword);
-        if (empMatches.length > 1) {
-            console.warn(`[Auth] ⚠️ Identity Collision (Employee): Multiple accounts for "${cleanUsername}"`);
-            return res.status(409).json({ success: false, error: 'Ambiguous credentials across organizations.' });
-        }
-        if (empMatches.length === 1) {
-            const emp = empMatches[0];
-            console.log(`[Auth] ✅ Password Match for Employee: ${emp.username} (Org: ${emp.organizationId})`);
-
-            // --- STRICT ISOLATION CHECK ---
-            // Check if this user also exists as a Student with the same credentials
-            // This prevents students from accidentally logging in as staff if they share a username/email
-            const potentialStudents = await Student.find(userQuery);
-            const studentCollision = potentialStudents.some(s => s.password === cleanPassword);
-
-            if (studentCollision) {
-                console.warn(`[Auth] ⚠️ Identity Collision BLOCKED: "${cleanUsername}" matches both Employee and Student.`);
-                return res.status(409).json({
-                    success: false,
-                    error: 'Ambiguous credentials. This identifier matches both a Student and a Staff account. Please contact your admin to resolve this duplication.'
-                });
-            }
-
-            // Check if organization is active
-            if (emp.organizationId) {
-                const org = await Organization.findById(emp.organizationId);
-                if (org && !org.isActive) {
-                    console.warn(`[Auth] ⛔ Organization is deactivated for employee: ${emp.username}`);
-                    return res.status(403).json({ success: false, error: 'Your organization account has been deactivated. Please contact the administrator.' });
-                }
-            }
-
-            let role = 'Employee';
-
-            // IMPROVED ROLE DETERMINATION:
-            // Check Department's panelType first, then fallback to designation string check
-            if (emp.departmentId) {
-                try {
-                    const dept = await Department.findById(emp.departmentId);
-                    if (dept) {
-                        if (dept.panelType === 'HR') role = 'HR';
-                        else if (dept.panelType === 'Operations') role = 'Operations';
-                        else if (dept.panelType === 'Finance') role = 'Finance';
-                    }
-                } catch (err) {
-                    console.error('[Auth] Error fetching department for role determination:', err);
-                }
-            }
-
-            // Fallback: If still 'Employee', check designation (lower priority)
-            if (role === 'Employee') {
-                const desig = (emp.designation || '').toUpperCase();
-                // ONLY auto-promote to HR if they are in an HR related department AND have the designation
-                const deptName = (emp.department || '').toUpperCase();
-                if (desig.includes('HR') && deptName.includes('HR')) role = 'HR';
-                else if (desig.includes('OPERATIONS') && deptName.includes('OPERATIONS')) role = 'Operations';
-            }
-
-            return res.json({
-                success: true,
-                user: {
-                    name: emp.employeeName,
-                    role: role,
-                    employeeId: emp.employeeId,
-                    organizationId: emp.organizationId,
-                    departmentId: emp.departmentId
-                }
-            });
-        }
-
-        // --- Check Student ---
-        console.log(`[Auth] 🔍 Searching Students...`);
-        const students = await Student.find(userQuery);
-        const stuMatches = students.filter(s => s.password === cleanPassword);
-        if (stuMatches.length > 1) {
-            console.warn(`[Auth] ⚠️ Identity Collision (Student): Multiple accounts for "${cleanUsername}"`);
-            return res.status(409).json({ success: false, error: 'Ambiguous student credentials.' });
-        }
-        if (stuMatches.length === 1) {
-            const stu = stuMatches[0];
-            if (stu.organizationId) {
-                const org = await Organization.findById(stu.organizationId);
-                if (org && !org.isActive) {
-                    console.warn(`[Auth] ⛔ Organization is deactivated for student: ${stu.email}`);
-                    return res.status(403).json({ success: false, error: 'Your organization account has been deactivated. Please contact the administrator.' });
-                }
-            }
-
-            // Enforce Multi-Dept Verification
-            if (stu.verificationStatus !== 'Active') {
-                console.warn(`[Auth] ⛔ Student login denied. Status: ${stu.verificationStatus} for ${stu.email}`);
-                return res.status(403).json({
-                    success: false,
-                    error: `Login restricted. Your enrollment status is currently "${stu.verificationStatus || 'Pending'}". You can access the portal only after final approval.`
-                });
-            }
-
-            return res.json({
-                success: true,
-                user: {
-                    name: stu.studentName,
-                    role: 'Student',
-                    email: stu.email,
-                    organizationId: stu.organizationId
-                }
-            });
-        }
-
-        console.warn(`[Auth] ❌ Authentication failed for: "${cleanUsername}"`);
+        console.warn(`[Auth Phase] ❌ NO MATCH for "${cleanUsername}"`);
         return res.status(401).json({ success: false, error: 'Invalid username or password' });
     } catch (error) {
-        console.error('[Auth] ❌ System Error:', error);
+        console.error('[Auth Phase] Critical Error:', error);
         return res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
 
 // POST /api/auth/superadmin/login
-// POST /api/auth/superadmin/login
 router.post('/superadmin/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-
-        if (!username || !password) {
-            return res.status(400).json({ success: false, error: 'Username and password are required' });
-        }
-
         const cleanUsername = String(username).trim();
         const cleanPassword = String(password);
-
-        console.log(`[SuperAdmin Auth] Login attempt for: "${cleanUsername}"`);
 
         const admin = await SuperAdmin.findOne({
             $or: [
@@ -288,35 +153,17 @@ router.post('/superadmin/login', async (req, res) => {
             ]
         });
 
-        if (!admin) {
-            console.warn(`[SuperAdmin Auth] ❌ Admin not found: "${cleanUsername}"`);
-            return res.status(401).json({ success: false, error: 'Invalid credentials' });
-        }
-
-        if (!admin.password) {
-            console.warn(`[SuperAdmin Auth] ❌ Admin user found but has NO password set: ${admin.username}`);
-            return res.status(401).json({ success: false, error: 'Invalid credentials' });
-        }
+        if (!admin || !admin.password) return res.status(401).json({ success: false, error: 'Invalid credentials' });
 
         const isMatch = await bcrypt.compare(cleanPassword, admin.password);
-        if (!isMatch) {
-            console.warn(`[SuperAdmin Auth] ❌ Password mismatch for: "${cleanUsername}"`);
-            return res.status(401).json({ success: false, error: 'Invalid credentials' });
-        }
+        if (!isMatch) return res.status(401).json({ success: false, error: 'Invalid credentials' });
 
-        console.log(`[SuperAdmin Auth] ✅ Login successful for: ${admin.username}`);
         return res.json({
             success: true,
-            user: {
-                name: admin.fullName,
-                role: 'SuperAdmin',
-                id: admin._id,
-                email: admin.email
-            }
+            user: { name: admin.fullName, role: 'SuperAdmin', id: admin._id, email: admin.email }
         });
     } catch (error) {
-        console.error('[SuperAdmin Auth] Error:', error);
-        return res.status(500).json({ success: false, error: `Internal server error: ${error.message}` });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
