@@ -45,5 +45,10 @@ JobOpeningSchema.post('save', async function (doc) {
     }
 });
 
+// Optimization Indexes
+JobOpeningSchema.index({ organizationId: 1 });
+JobOpeningSchema.index({ organizationId: 1, departmentId: 1 });
+JobOpeningSchema.index({ status: 1 });
+
 module.exports = mongoose.model('JobOpening', JobOpeningSchema);
 

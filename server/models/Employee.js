@@ -119,6 +119,8 @@ EmployeeSchema.post('findOneAndDelete', async function (doc) {
 // Compound Index for Multi-Tenant Isolation
 EmployeeSchema.index({ organizationId: 1, employeeId: 1 }, { unique: true });
 EmployeeSchema.index({ organizationId: 1, username: 1 }, { unique: true, sparse: true });
+EmployeeSchema.index({ organizationId: 1 });
 EmployeeSchema.index({ departmentId: 1 });
+EmployeeSchema.index({ organizationId: 1, departmentId: 1 });
 
 module.exports = mongoose.models.Employee || mongoose.model('Employee', EmployeeSchema);

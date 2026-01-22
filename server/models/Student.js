@@ -45,6 +45,10 @@ StudentSchema.index({ organizationId: 1, email: 1 }, {
     partialFilterExpression: { email: { $type: "string", $gt: "" } }
 });
 
+StudentSchema.index({ organizationId: 1 });
+StudentSchema.index({ organizationId: 1, departmentId: 1 });
+StudentSchema.index({ verificationStatus: 1 });
+
 StudentSchema.index({ departmentId: 1 });
 
 module.exports = mongoose.models.Student || mongoose.model('Student', StudentSchema);
