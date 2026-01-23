@@ -1,0 +1,77 @@
+{
+  "employees": [
+    {
+      "id": "EMP-3895",
+      "user": "EMP-3895",
+      "name": "f"
+    },
+    {
+      "id": "EMP-7636",
+      "user": "EMP-7636",
+      "name": "ammu"
+    },
+    {
+      "id": "EMP-2563",
+      "user": "EMP-2563",
+      "name": "saju"
+    },
+    {
+      "id": "EMP-3564",
+      "user": "EMP-3564",
+      "name": "acc"
+    },
+    {
+      "id": "EMP-2927",
+      "user": "EMP-2927",
+      "name": "superadmin"
+    },
+    {
+      "id": "EMP-7973",
+      "user": "EMP-7973",
+      "name": "hh"
+    },
+    {
+      "id": "EMP-6436",
+      "user": "EMP-6436",
+      "name": "abi"
+    }
+  ],
+  "departments": [
+    {
+      "code": "1111",
+      "user": "hrr",
+      "name": "hr",
+      "panel": "HR"
+    },
+    {
+      "code": "SSD",
+      "user": "op12",
+      "name": "operations",
+      "panel": "Operations"
+    },
+    {
+      "code": "2",
+      "user": "ops",
+      "name": "operation",
+      "panel": "Operations"
+    },
+    {
+      "code": "A",
+      "user": "hrrrr",
+      "name": "ht",
+      "panel": "HR"
+    },
+    {
+      "code": "55",
+      "user": "finn",
+      "name": "fin",
+      "panel": "Finance"
+    },
+    {
+      "code": "3",
+      "user": "fin",
+      "name": "ff",
+      "panel": "Finance"
+    }
+  ]
+}

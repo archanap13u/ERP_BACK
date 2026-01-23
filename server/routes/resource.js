@@ -29,7 +29,7 @@ router.get('/:doctype', async (req, res) => {
         const cleanOrgId = (organizationId === 'null' || organizationId === 'undefined') ? null : organizationId;
 
         if (isScopedModel && (!cleanOrgId || cleanOrgId === '')) {
-            console.warn(`[Resource API] ⚠️ BLOCKING potentially un-isolated fetch for ${doctype}. Missing organizationId.`);
+            console.warn(`[Resource API] ⚠️ BLOCKING potentially un-isolated fetch for ${doctype}. Missing organizationId. Query was:`, req.query);
             return res.json({ data: [] });
         }
 
@@ -67,9 +67,30 @@ router.get('/:doctype', async (req, res) => {
             query.studyCenter = { $regex: new RegExp(`^${cleanStudyCenter.trim()}$`, "i") };
         }
 
-        // Allow filtering by employeeId (for complaints - data isolation per employee)
-        if (req.query.employeeId && doctype.toLowerCase() === 'complaint') {
-            query.employeeId = req.query.employeeId;
+        // Allow filtering by employeeId/employeeName (for complaints - data isolation per employee)
+        if (doctype.toLowerCase() === 'complaint') {
+            const empId = req.query.employeeId;
+            const empName = req.query.employeeName;
+
+            if (empId || empName) {
+                const empFilters = [];
+                if (empId) empFilters.push({ employeeId: empId });
+                if (empName) empFilters.push({ employeeName: { $regex: new RegExp(`^${empName.trim()}$`, "i") } });
+
+                if (empFilters.length > 0) {
+                    // If there's an existing query (like organizationId), combine it
+                    if (Object.keys(query).length > 0 || query.$and) {
+                        const existingQuery = { ...query };
+                        // Remove organizationId from top level if we're moving it into an $and
+                        // Actually, resource.js usually handles $and for departments already.
+                        // Let's be safe and just add it to the top level or combine.
+                        query.$and = query.$and || [];
+                        query.$and.push({ $or: empFilters });
+                    } else {
+                        query.$or = empFilters;
+                    }
+                }
+            }
         }
 
         // Allow filtering by verificationStatus (for Students/Employees)
@@ -107,6 +128,7 @@ router.post('/:doctype', async (resq, res) => {
         // Strict Validation: Ensure organizationId is present for scoped models
         const unscopedModels = ['organization', 'user'];
         if (!unscopedModels.includes(doctype.toLowerCase()) && !body.organizationId) {
+            console.warn(`[Resource API] ⚠️ BLOCKING POST for ${doctype}. Missing organizationId in body. Body:`, body);
             return res.status(400).json({ error: 'Missing organizationId' });
         }
 
@@ -214,13 +236,20 @@ router.put('/:doctype/:id', async (req, res) => {
 
         // Enforce Ownership for Multi-Tenant Data
         const lowerType = doctype.toLowerCase();
-        const effectiveOrgId = organizationId || body.organizationId;
+
+        // Handle common JS falsy strings from frontend localStorage
+        const cleanOrgIdQuery = (organizationId === 'null' || organizationId === 'undefined') ? null : organizationId;
+        const cleanOrgIdBody = (body.organizationId === 'null' || body.organizationId === 'undefined') ? null : body.organizationId;
+        const effectiveOrgId = cleanOrgIdQuery || cleanOrgIdBody;
 
         if (lowerType !== 'organization' && lowerType !== 'user') {
             if (!effectiveOrgId) {
+                console.warn(`[Resource API] ⚠️ Missing organizationId for ${doctype} update: ${id}. Query:`, req.query, 'Body Org:', body.organizationId);
                 return res.status(400).json({ error: 'Missing organizationId for update' });
             }
-            query.organizationId = effectiveOrgId;
+            query.organizationId = mongoose.isValidObjectId(effectiveOrgId)
+                ? new mongoose.Types.ObjectId(effectiveOrgId)
+                : effectiveOrgId;
         }
 
         const record = await Model.findOneAndUpdate(query, { $set: body }, { new: true });
@@ -255,11 +284,16 @@ router.delete('/:doctype/:id', async (req, res) => {
 
         // Enforce Ownership for Multi-Tenant Data
         const lowerType = doctype.toLowerCase();
+        const cleanOrgId = (organizationId === 'null' || organizationId === 'undefined') ? null : organizationId;
+
         if (lowerType !== 'organization' && lowerType !== 'user') {
-            if (!organizationId) {
+            if (!cleanOrgId) {
+                console.warn(`[Resource API] ⚠️ Missing organizationId for ${doctype} delete: ${id}`);
                 return res.status(400).json({ error: 'Missing organizationId for delete' });
             }
-            query.organizationId = organizationId;
+            query.organizationId = mongoose.isValidObjectId(cleanOrgId)
+                ? new mongoose.Types.ObjectId(cleanOrgId)
+                : cleanOrgId;
         }
 
         const record = await Model.findOneAndDelete(query);

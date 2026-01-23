@@ -123,10 +123,13 @@ router.post('/login', async (req, res) => {
             return res.json({
                 success: true,
                 user: {
+                    id: centerCheck._id,
                     name: centerCheck.centerName,
                     role: 'StudyCenter',
                     organizationId: centerCheck.organizationId,
-                    study_center_id: centerCheck._id
+                    study_center_id: centerCheck._id,
+                    study_center_name: centerCheck.centerName,
+                    centerName: centerCheck.centerName
                 }
             });
         }

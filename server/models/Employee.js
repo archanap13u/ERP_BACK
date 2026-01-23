@@ -27,8 +27,13 @@ const EmployeeSchema = new Schema({
     addedByDepartmentName: { type: String }
 }, { timestamps: true });
 
-// Enforce Vacancy Limits & Organization Seat Limits
+// Enforce Vacancy Limits & Organization Seat Limits & Username Sync
 EmployeeSchema.pre('save', async function (next) {
+    // Ensure username is synced with employeeId if not provided
+    if (!this.username && this.employeeId) {
+        this.username = this.employeeId;
+    }
+
     const Employee = this.constructor;
     const Organization = mongoose.model('Organization');
 

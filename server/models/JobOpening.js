@@ -39,9 +39,18 @@ JobOpeningSchema.post('save', async function (doc) {
         } else {
             console.log(`[Vacancy] Designation "${doc.job_title}" already exists for this department`);
         }
+
+        // --- NEW: Sync with Department Whitelist ---
+        if (doc.departmentId) {
+            const Department = mongoose.model('Department');
+            await Department.findByIdAndUpdate(doc.departmentId, {
+                $addToSet: { designations: doc.job_title }
+            });
+            console.log(`[Vacancy] Whitelisted "${doc.job_title}" in department ${doc.department}`);
+        }
     } catch (err) {
         // Don't fail the vacancy creation if designation creation fails
-        console.error('[Vacancy] Failed to auto-create Designation:', err.message);
+        console.error('[Vacancy] Failed to auto-sync Designation/Whitelist:', err.message);
     }
 });
 

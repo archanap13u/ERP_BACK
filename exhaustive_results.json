@@ -1,0 +1,26 @@
+{
+  "Employee": [
+    {
+      "_id": "6971c8b650f304bc8e7c4d21",
+      "employeeId": "EMP-6436",
+      "employeeName": "abi",
+      "designation": "h",
+      "department": "hr",
+      "dateOfJoining": "2026-01-22T00:00:00.000Z",
+      "status": "Active",
+      "verificationStatus": "Pending",
+      "email": "info@arniuniversity.edu.in",
+      "username": "EMP-6436",
+      "password": "abi",
+      "organizationId": "696f24697e737d6a7669c501",
+      "departmentId": "696f248d7e737d6a7669c523",
+      "reportsToRole": "h",
+      "isOrgAdmin": false,
+      "permissions": [],
+      "jobOpening": "6971bd0750f304bc8e7c47f5",
+      "createdAt": "2026-01-22T06:50:30.316Z",
+      "updatedAt": "2026-01-22T06:50:30.316Z",
+      "__v": 0
+    }
+  ]
+}
