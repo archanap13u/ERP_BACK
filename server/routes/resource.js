@@ -247,11 +247,18 @@ router.put('/:doctype/:id', async (req, res) => {
                 console.warn(`[Resource API] ⚠️ Missing organizationId for ${doctype} update: ${id}. Query:`, req.query, 'Body Org:', body.organizationId);
                 return res.status(400).json({ error: 'Missing organizationId for update' });
             }
-            query.organizationId = mongoose.isValidObjectId(effectiveOrgId)
-                ? new mongoose.Types.ObjectId(effectiveOrgId)
-                : effectiveOrgId;
+            // Use $or to match both ObjectId and String representations for maximum compatibility
+            if (mongoose.isValidObjectId(effectiveOrgId)) {
+                query.$or = [
+                    { organizationId: new mongoose.Types.ObjectId(effectiveOrgId) },
+                    { organizationId: effectiveOrgId }
+                ];
+            } else {
+                query.organizationId = effectiveOrgId;
+            }
         }
 
+        console.log(`[API PUT] ${doctype}/${id} Query:`, JSON.stringify(query));
         const record = await Model.findOneAndUpdate(query, { $set: body }, { new: true });
         if (!record) return res.status(404).json({ error: 'Record not found or access denied.' });
 
