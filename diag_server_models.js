@@ -4,7 +4,8 @@ require('dotenv').config();
 async function checkSchema() {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
-        const Program = require('./backend/dist/models/Program').default;
+        // Explicitly load server model
+        const Program = require('./server/models/Program');
         const uPath = Program.schema.path('university');
         if (uPath) {
             console.log('UNIVERSITY_INSTANCE:' + uPath.instance);

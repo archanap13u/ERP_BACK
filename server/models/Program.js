@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const ProgramSchema = new Schema({
     programName: { type: String, required: true },
-    university: { type: Schema.Types.ObjectId, ref: 'University', required: true },
+    university: { type: String, required: true },
     programType: {
         type: String,
         enum: ['Skill', 'B.Voc'],
@@ -27,5 +27,10 @@ const ProgramSchema = new Schema({
 
 // Compound Index for Multi-Tenant Isolation
 ProgramSchema.index({ organizationId: 1, programName: 1 }, { unique: true });
+
+// Remove from cache to force schema update in development
+if (mongoose.models.Program) {
+    delete mongoose.models.Program;
+}
 
 module.exports = mongoose.model('Program', ProgramSchema);

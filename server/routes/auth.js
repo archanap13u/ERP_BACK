@@ -69,7 +69,7 @@ router.post('/login', async (req, res) => {
             console.log(`[Auth Phase] 2. Student Matching Pattern found.`);
             if (stuCheck.password === cleanPassword) {
                 console.log(`[Auth Phase] ✅ Password Matched for Student.`);
-                if (stuCheck.verificationStatus !== 'Active') return res.status(403).json({ success: false, error: 'Student account not active.' });
+                if (!stuCheck.isActive) return res.status(403).json({ success: false, error: 'Student account not active.' });
                 return res.json({
                     success: true,
                     user: { name: stuCheck.studentName, role: 'Student', organizationId: stuCheck.organizationId }

@@ -23,9 +23,9 @@ const StudentSchema = new Schema({
     university: { type: String }, // University name
     program: { type: String }, // Program name
     enrollmentDate: { type: Date, default: Date.now },
-    verificationStatus: { type: String, enum: ['Pending', 'Processing', 'Verified by Ops', 'Active'], default: 'Processing' },
+    verificationStatus: { type: String, enum: ['Pending', 'Processing', 'Verified by Ops', 'Approved by Accounts', 'Active'], default: 'Processing' },
     paymentReceipt: { type: String }, // URL or reference
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Compound Indexes for Multi-Tenant Isolation
@@ -51,4 +51,9 @@ StudentSchema.index({ verificationStatus: 1 });
 
 StudentSchema.index({ departmentId: 1 });
 
-module.exports = mongoose.models.Student || mongoose.model('Student', StudentSchema);
+// Remove from cache to force schema update in development
+if (mongoose.models.Student) {
+    delete mongoose.models.Student;
+}
+
+module.exports = mongoose.model('Student', StudentSchema);

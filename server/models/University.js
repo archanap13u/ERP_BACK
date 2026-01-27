@@ -16,4 +16,9 @@ const UniversitySchema = new Schema({
     departmentId: { type: Schema.Types.ObjectId, ref: 'Department' }
 }, { timestamps: true });
 
+// Remove from cache to force schema update in development
+if (mongoose.models.University) {
+    delete mongoose.models.University;
+}
+
 module.exports = mongoose.model('University', UniversitySchema);
