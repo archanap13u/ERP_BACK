@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const DepartmentSchema = new Schema({
     name: { type: String, required: true },
     code: { type: String, required: true },
-    username: { type: String },
+    username: { type: String, unique: true, sparse: true, trim: true },
     password: { type: String },
     panelType: { type: String, enum: ['HR', 'Operations', 'Finance', 'Inventory', 'CRM', 'Projects', 'Support', 'Assets', 'Custom', 'Generic'], default: 'Custom' },
     organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
