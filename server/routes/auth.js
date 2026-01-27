@@ -72,7 +72,13 @@ router.post('/login', async (req, res) => {
                 if (!stuCheck.isActive) return res.status(403).json({ success: false, error: 'Student account not active.' });
                 return res.json({
                     success: true,
-                    user: { name: stuCheck.studentName, role: 'Student', organizationId: stuCheck.organizationId }
+                    user: {
+                        id: stuCheck._id,
+                        name: stuCheck.studentName,
+                        username: stuCheck.username,
+                        role: 'Student',
+                        organizationId: stuCheck.organizationId
+                    }
                 });
             } else {
                 console.warn(`[Auth Phase] ❌ Password Mismatch for Student. Blocking fallthrough.`);

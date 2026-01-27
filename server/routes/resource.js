@@ -98,6 +98,30 @@ router.get('/:doctype', async (req, res) => {
             query.verificationStatus = req.query.verificationStatus;
         }
 
+        // Apply generic filtering for any other query parameters that match schema fields
+        const schemaPaths = Object.keys(Model.schema.paths);
+        Object.keys(req.query).forEach(key => {
+            // Skip already handled special params
+            if (['organizationId', 'departmentId', 'department', 'studyCenter', 'employeeId', 'employeeName', 'verificationStatus'].includes(key)) return;
+
+            if (schemaPaths.includes(key)) {
+                const val = req.query[key];
+                if (val !== 'null' && val !== 'undefined' && val !== '') {
+                    // Use regex for strings, exact match for others
+                    if (Model.schema.paths[key].instance === 'String') {
+                        query[key] = { $regex: new RegExp(`^${val.trim()}$`, "i") };
+                    } else {
+                        query[key] = val;
+                    }
+                }
+            }
+        });
+
+        // SPECIAL HANDLING: If specifically searching by employeeId (for any doctype, not just complaint)
+        if (req.query.employeeId && doctype.toLowerCase() !== 'complaint') {
+            query.employeeId = req.query.employeeId;
+        }
+
         console.log(`[API GET List] ${doctype} Query:`, JSON.stringify(query));
         const data = await Model.find(query).sort({ updatedAt: -1 });
         console.log(`[API GET List] ${doctype}: Found ${data.length} records for org ${cleanOrgId}`);
