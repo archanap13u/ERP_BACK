@@ -124,6 +124,7 @@ router.get('/:doctype', async (req, res) => {
 
         console.log(`[API GET List] ${doctype} Query:`, JSON.stringify(query));
         const data = await Model.find(query).sort({ updatedAt: -1 });
+
         console.log(`[API GET List] ${doctype}: Found ${data.length} records for org ${cleanOrgId}`);
         return res.json({ data });
     } catch (error) {
@@ -271,14 +272,36 @@ router.put('/:doctype/:id', async (req, res) => {
                 console.warn(`[Resource API] ⚠️ Missing organizationId for ${doctype} update: ${id}. Query:`, req.query, 'Body Org:', body.organizationId);
                 return res.status(400).json({ error: 'Missing organizationId for update' });
             }
-            // Use $or to match both ObjectId and String representations for maximum compatibility
+
+            // Start building the query with organization isolation
             if (mongoose.isValidObjectId(effectiveOrgId)) {
-                query.$or = [
-                    { organizationId: new mongoose.Types.ObjectId(effectiveOrgId) },
-                    { organizationId: effectiveOrgId }
-                ];
+                query.$and = [{
+                    $or: [
+                        { organizationId: new mongoose.Types.ObjectId(effectiveOrgId) },
+                        { organizationId: effectiveOrgId }
+                    ]
+                }];
             } else {
                 query.organizationId = effectiveOrgId;
+            }
+
+            // Enforce Departmental Isolation if provided (Critical for Admins)
+            const deptId = req.query.departmentId;
+            if (deptId && doctype.toLowerCase() !== 'department' && deptId !== 'undefined' && deptId !== 'null') {
+                const targetDeptId = mongoose.isValidObjectId(deptId) ? new mongoose.Types.ObjectId(deptId) : deptId;
+                const deptConstraint = {
+                    $or: [
+                        { departmentId: targetDeptId },
+                        { addedByDepartmentId: targetDeptId }
+                    ]
+                };
+
+                if (query.$and) {
+                    query.$and.push(deptConstraint);
+                } else {
+                    query.$and = [{ organizationId: query.organizationId }, deptConstraint];
+                    delete query.organizationId;
+                }
             }
         }
 
@@ -322,9 +345,28 @@ router.delete('/:doctype/:id', async (req, res) => {
                 console.warn(`[Resource API] ⚠️ Missing organizationId for ${doctype} delete: ${id}`);
                 return res.status(400).json({ error: 'Missing organizationId for delete' });
             }
-            query.organizationId = mongoose.isValidObjectId(cleanOrgId)
-                ? new mongoose.Types.ObjectId(cleanOrgId)
-                : cleanOrgId;
+
+            // Organization Isolation
+            const orgConstraint = mongoose.isValidObjectId(cleanOrgId)
+                ? { $or: [{ organizationId: new mongoose.Types.ObjectId(cleanOrgId) }, { organizationId: cleanOrgId }] }
+                : { organizationId: cleanOrgId };
+
+            // Department Isolation (if provided)
+            const deptId = req.query.departmentId;
+            if (deptId && lowerType !== 'department' && deptId !== 'undefined' && deptId !== 'null') {
+                const targetDeptId = mongoose.isValidObjectId(deptId) ? new mongoose.Types.ObjectId(deptId) : deptId;
+                query.$and = [
+                    orgConstraint,
+                    {
+                        $or: [
+                            { departmentId: targetDeptId },
+                            { addedByDepartmentId: targetDeptId }
+                        ]
+                    }
+                ];
+            } else {
+                Object.assign(query, orgConstraint);
+            }
         }
 
         const record = await Model.findOneAndDelete(query);

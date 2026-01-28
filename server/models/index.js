@@ -32,6 +32,8 @@ const StudyCenter = require('./StudyCenter');
 const InternalMark = require('./InternalMark');
 const OpsAnnouncement = require('./OpsAnnouncement');
 const ExamSchedule = require('./ExamSchedule');
+const Task = require('./Task');
+const LeaveRequest = require('./LeaveRequest');
 
 // Models index for dynamic resource API
 const models = {
@@ -70,7 +72,9 @@ const models = {
     internalmark: InternalMark,
     studentapplicant: Application,
     opsannouncement: OpsAnnouncement,
-    examschedule: ExamSchedule
+    examschedule: ExamSchedule,
+    task: Task,
+    leaverequest: LeaveRequest
 };
 
 module.exports = {
@@ -106,5 +110,7 @@ module.exports = {
     StudyCenter,
     InternalMark,
     ExamSchedule,
+    Task,
+    LeaveRequest,
     models
 };

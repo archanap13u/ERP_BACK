@@ -49,6 +49,7 @@ router.post('/login', async (req, res) => {
                 const payload = {
                     success: true,
                     user: {
+                        id: empCheck._id,
                         name: empCheck.employeeName,
                         role: 'Employee',
                         employeeId: empCheck.employeeId,
