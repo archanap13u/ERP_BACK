@@ -64,7 +64,25 @@ router.get('/:doctype', async (req, res) => {
         }
         const cleanStudyCenter = (studyCenter === 'null' || studyCenter === 'undefined') ? null : studyCenter;
         if (cleanStudyCenter) {
-            query.studyCenter = { $regex: new RegExp(`^${cleanStudyCenter.trim()}$`, "i") };
+            const centerRegex = { $regex: new RegExp(`^${cleanStudyCenter.trim()}$`, "i") };
+
+            // Specialized filtering for Announcements (which use target fields)
+            if (doctype.toLowerCase().includes('announcement')) {
+                const centerFilters = [
+                    { targetStudyCenter: centerRegex },
+                    { targetStudyCenter: 'All' },
+                    { targetStudyCenter: null }, // Handle defaults
+                    { targetCenter: centerRegex },
+                    { targetCenter: 'All' }
+                ];
+
+                // Add to existing AND criteria or create new
+                query.$and = query.$and || [];
+                query.$and.push({ $or: centerFilters });
+            } else {
+                // Standard behavior for Students, Employees, etc.
+                query.studyCenter = centerRegex;
+            }
         }
 
         // Allow filtering by employeeId/employeeName (for complaints - data isolation per employee)

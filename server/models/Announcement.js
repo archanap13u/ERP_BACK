@@ -10,7 +10,7 @@ const AnnouncementSchema = new Schema({
     departmentId: { type: Schema.Types.ObjectId, ref: 'Department' }, // Optional link
     pinned: { type: Boolean, default: false },
     showAsPopup: { type: Boolean, default: false },
-    targetCenter: { type: String, default: 'All' }, // 'All' or specific Center Name
+    targetStudyCenter: { type: String, default: null }, // 'All' or specific Center Name
     startDate: { type: Date },
     endDate: { type: Date },
     author: { type: String }, // User who posted it

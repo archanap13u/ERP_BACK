@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 // Force Restart 3
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -44,9 +45,22 @@ app.use('/api/resource', resourceRoutes);
 app.use('/api/performance', performanceRoutes);
 app.use('/api/poll', pollRoutes);
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString(), version: 'v2-debug' });
+});
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.use((req, res, next) => {
+    // Skip if it's an API request or not a GET request
+    if (req.path.startsWith('/api') || req.method !== 'GET') {
+        return next();
+    }
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 // Error handler
