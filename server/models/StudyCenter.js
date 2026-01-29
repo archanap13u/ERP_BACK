@@ -11,7 +11,10 @@ const StudyCenterSchema = new Schema({
     departmentId: { type: Schema.Types.ObjectId, ref: 'Department' },
     department: { type: String }, // Department name that manages this center
     username: { type: String, sparse: true },
-    password: { type: String }
+    password: { type: String },
+    salesEmployeeId: { type: String }, // For attribution to the sales person who referred this center
+    salesEmployeeName: { type: String },
+    source: { type: String, default: 'Internal' } // 'Internal' or 'Referral'
 }, { timestamps: true });
 
 // Compound Indexes for Multi-Tenant Isolation
