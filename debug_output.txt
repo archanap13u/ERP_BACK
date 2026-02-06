@@ -1,0 +1,208 @@
+Connecting to MongoDB...
+
+--- FINDING EMPLOYEE: Arun ---
+Found Employee: arun (ID: EMP-4467)
+- _id: 6972f201039d93b4f1f09c85
+- Department: "operation"
+- DepartmentId: 6972f157039d93b4f1f09bd7
+- OrganizationId: 6972f078039d93b4f1f09b53
+- Linked Dept Metadata: Name="operation", PanelType="Operations"
+Found Employee: arun (ID: EMP-3)
+- _id: 697868ec7ccb4a26a574176c
+- Department: "Operations"
+- DepartmentId: 697867797ccb4a26a57415be
+- OrganizationId: 69786287073b3f7f959f7280
+- Linked Dept Metadata: Name="operations", PanelType="Operations"
+Found Employee: sarun (ID: EMP-s)
+- _id: 697c59554cd891d907f5351a
+- Department: "Sales"
+- DepartmentId: 697b020594396a1fd48f8b93
+- OrganizationId: 6979e17bfd1c05443556411c
+- Linked Dept Metadata: Name="Sales", PanelType="Sales"
+Found Employee: arun (ID: emp-ar)
+- _id: 697d7f7a2ba7175259983a42
+- Department: "Operations"
+- DepartmentId: 697d7ed82ba71752599839ae
+- OrganizationId: 697d7e7f2ba717525998391f
+- Linked Dept Metadata: Name="op", PanelType="Operations"
+
+--- FINDING LEAVE REQUESTS FOR ARUN ---
+
+Checking leaves for arun (EMP-4467):
+> Leave Request: 6979a795784ee4c0ff38cef0
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d393e91b992a0d90dc23
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d4d9e91b992a0d90dd91
+  - Status: "Pending HR"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 697c59864cd891d907f53555
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5acf4cd891d907f535a7
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5b5d4cd891d907f53645
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697d7fe12ba7175259983ad6
+  - Status: "Pending Department"
+  - Department in Leave: "op"
+  - DepartmentId: "697d7ed82ba71752599839ae"
+  - OrganizationId: "697d7e7f2ba717525998391f"
+  - Dates: undefined to undefined
+
+Checking leaves for arun (EMP-3):
+> Leave Request: 6979a795784ee4c0ff38cef0
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d393e91b992a0d90dc23
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d4d9e91b992a0d90dd91
+  - Status: "Pending HR"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 697c59864cd891d907f53555
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5acf4cd891d907f535a7
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5b5d4cd891d907f53645
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697d7fe12ba7175259983ad6
+  - Status: "Pending Department"
+  - Department in Leave: "op"
+  - DepartmentId: "697d7ed82ba71752599839ae"
+  - OrganizationId: "697d7e7f2ba717525998391f"
+  - Dates: undefined to undefined
+
+Checking leaves for sarun (EMP-s):
+> Leave Request: 6979a795784ee4c0ff38cef0
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d393e91b992a0d90dc23
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d4d9e91b992a0d90dd91
+  - Status: "Pending HR"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 697c59864cd891d907f53555
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5acf4cd891d907f535a7
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5b5d4cd891d907f53645
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697d7fe12ba7175259983ad6
+  - Status: "Pending Department"
+  - Department in Leave: "op"
+  - DepartmentId: "697d7ed82ba71752599839ae"
+  - OrganizationId: "697d7e7f2ba717525998391f"
+  - Dates: undefined to undefined
+
+Checking leaves for arun (emp-ar):
+> Leave Request: 6979a795784ee4c0ff38cef0
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d393e91b992a0d90dc23
+  - Status: "Approved"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 6979d4d9e91b992a0d90dd91
+  - Status: "Pending HR"
+  - Department in Leave: "operations"
+  - DepartmentId: "697867797ccb4a26a57415be"
+  - OrganizationId: "69786287073b3f7f959f7280"
+  - Dates: undefined to undefined
+> Leave Request: 697c59864cd891d907f53555
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5acf4cd891d907f535a7
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697c5b5d4cd891d907f53645
+  - Status: "Pending Department"
+  - Department in Leave: "Sales"
+  - DepartmentId: "697b020594396a1fd48f8b93"
+  - OrganizationId: "6979e17bfd1c05443556411c"
+  - Dates: undefined to undefined
+> Leave Request: 697d7fe12ba7175259983ad6
+  - Status: "Pending Department"
+  - Department in Leave: "op"
+  - DepartmentId: "697d7ed82ba71752599839ae"
+  - OrganizationId: "697d7e7f2ba717525998391f"
+  - Dates: undefined to undefined
+
+--- FINDING OPS DEPARTMENTS ---
+Dept: "operations" (ID: 696f24d57e737d6a7669c56b), PanelType: "Operations"

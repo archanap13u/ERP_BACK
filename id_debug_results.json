@@ -1,0 +1,40 @@
+{
+  "departments": [
+    {
+      "name": "Sales",
+      "id": "697b020594396a1fd48f8b93",
+      "panelType": "Sales"
+    },
+    {
+      "name": "hr",
+      "id": "6979e1f7fd1c05443556415f",
+      "panelType": "HR"
+    },
+    {
+      "name": "finance",
+      "id": "6979e231fd1c054435564167",
+      "panelType": "Finance"
+    },
+    {
+      "name": "operation",
+      "id": "6979e20ffd1c054435564162",
+      "panelType": "Operations"
+    }
+  ],
+  "bdes": [
+    {
+      "name": "fathima",
+      "id": "EMP-03",
+      "stored_dept_string": "Sales",
+      "stored_dept_id": "697b020594396a1fd48f8b93",
+      "resolved_dept_name": "Sales"
+    },
+    {
+      "name": "anagha",
+      "id": "EMP-98",
+      "stored_dept_string": "Sales",
+      "stored_dept_id": "697b020594396a1fd48f8b93",
+      "resolved_dept_name": "Sales"
+    }
+  ]
+}

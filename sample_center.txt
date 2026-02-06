@@ -1,0 +1,17 @@
+--- SAMPLE CENTER ---
+{
+  "_id": "6968c277f70fab51e57028a2",
+  "centerName": "Lumina",
+  "location": "ghfd",
+  "manager": "jhg",
+  "phone": "09072298603",
+  "email": "jh",
+  "organizationId": "6961df3caae17639323fc3a2",
+  "departmentId": "6961e060aae17639323fc413",
+  "username": "center1",
+  "password": "center1",
+  "createdAt": "2026-01-15T10:33:27.877Z",
+  "updatedAt": "2026-01-15T10:35:29.103Z",
+  "__v": 0
+}
+--- END ---

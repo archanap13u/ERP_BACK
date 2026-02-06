@@ -1,0 +1,91 @@
+--- STUDY CENTERS ---
+Name: Lumina
+Username: center1
+Password: center1
+Org: 6961df3caae17639323fc3a2
+---
+Name: Lumina
+Username: center1_1
+Password: center1
+Org: 6961df3caae17639323fc3a2
+---
+Name: Lumina
+Username: center1_2
+Password: center1
+Org: 6961df3caae17639323fc3a2
+---
+Name: Lumina
+Username: center12
+Password: center1
+Org: 6961df3caae17639323fc3a2
+---
+Name: iits
+Username: iits_center
+Password: iits
+Org: 6969b669217b28e718e16306
+---
+Name: iits
+Username: iitss
+Password: iits
+Org: 696dc4bf406e250bb59e8cd6
+---
+Name: rt
+Username: aaa
+Password: aaa
+Org: 696f24697e737d6a7669c501
+---
+Name: opsh
+Username: center
+Password: center
+Org: 696f24697e737d6a7669c501
+---
+Name: s
+Username: s
+Password: s
+Org: 696f51dcefb280d88f60a497
+---
+Name: f
+Username: f
+Password: f
+Org: 696f51dcefb280d88f60a497
+---
+Name: opcenter
+Username: opcent
+Password: opcent
+Org: 696f51dcefb280d88f60a497
+---
+Name: pims
+Username: pims
+Password: pims
+Org: 6972f078039d93b4f1f09b53
+---
+Name: timss
+Username: timss
+Password: timss
+Org: 6972f078039d93b4f1f09b53
+---
+Name: archanap
+Username: ar
+Password: ar
+Org: 6972f078039d93b4f1f09b53
+---
+Name: ii
+Username: ii
+Password: ii
+Org: 6972f078039d93b4f1f09b53
+---
+Name: eee
+Username: ee
+Password: ee
+Org: 6972f078039d93b4f1f09b53
+---
+Name: d
+Username: eeee
+Password: eeee
+Org: 6972f078039d93b4f1f09b53
+---
+Name: ddd
+Username: da
+Password: da
+Org: 6972f078039d93b4f1f09b53
+---
